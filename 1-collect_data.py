@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[3]:
+# In[1]:
 
 
 import pandas as pd
@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 
 
-# In[4]:
+# In[2]:
 
 
 options = 'results=8000&timezone=America%2FSao_Paulo'
@@ -20,19 +20,19 @@ data = requests.get('https://api.thingspeak.com/channels/657211/feeds.json?'+opt
 feeds = json.loads(data)['feeds']
 
 
-# In[9]:
+# In[3]:
 
 
 feeds[0]
 
 
-# In[10]:
+# In[4]:
 
 
 feeds[-1]
 
 
-# In[11]:
+# In[5]:
 
 
 df = pd.DataFrame.from_dict(feeds)
@@ -42,19 +42,19 @@ for field in fields:
 df['created_at'] = pd.to_datetime(df['created_at'])
 
 
-# In[12]:
+# In[6]:
 
 
 df.tail()
 
 
-# In[13]:
+# In[7]:
 
 
 df2 =  df.set_index('created_at').resample("5T").mean()[fields]
 
 
-# In[14]:
+# In[8]:
 
 
 df_old = pd.read_pickle('data.pickle')
@@ -62,31 +62,31 @@ df_old = df_old.append(df2)
 df_old = df_old.drop_duplicates().resample("5T").mean()[fields]
 
 
-# In[15]:
+# In[9]:
 
 
 df_old.tail()
 
 
-# In[16]:
+# In[10]:
 
 
 df_old[['field2','field4']].plot(figsize=(15,10),)
 
 
-# In[17]:
+# In[11]:
 
 
 df_old[['field1','field3']].plot(figsize=(15,10))
 
 
-# In[18]:
+# In[12]:
 
 
 df_old.to_pickle('data.pickle')
 
 
-# In[19]:
+# In[13]:
 
 
 dfx = df_old.reset_index()
@@ -95,7 +95,7 @@ dfx['date2'] = dfx['created_at'].dt.hour + dfx['created_at'].dt.minute/60 + dfx[
 dfx.tail()
 
 
-# In[20]:
+# In[14]:
 
 
 limits = [(int(dfx[['field1','field3']].min().min()),int(dfx[['field1','field3']].max().max()+1)),
@@ -103,7 +103,7 @@ limits = [(int(dfx[['field1','field3']].min().min()),int(dfx[['field1','field3']
 limits
 
 
-# In[21]:
+# In[15]:
 
 
 dfx['theta'] = dfx['date2']  * np.pi / 24. * 2
@@ -139,13 +139,13 @@ plt.savefig('plot.png',dpi=96, bbox_inches = 'tight')
 plt.show()
 
 
-# In[22]:
+# In[16]:
 
 
 dfx.describe()
 
 
-# In[23]:
+# In[17]:
 
 
 d2 = dfx[['created_at','field1']].groupby(dfx['created_at'].dt.date)
@@ -162,7 +162,7 @@ plt.savefig('plot_field1.png',dpi=96, bbox_inches = 'tight')
 plt.show()
 
 
-# In[24]:
+# In[18]:
 
 
 d2 = dfx[['created_at','field3']].groupby(dfx['created_at'].dt.date)
