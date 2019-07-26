@@ -35,67 +35,75 @@ feeds[-1]
 # In[5]:
 
 
-df = pd.DataFrame.from_dict(feeds)
-fields = [x for x in df.columns if x.startswith('field')]
-for field in fields:
-    df[field] = df[field].str.replace('\r\n','').astype(float)
-df['created_at'] = pd.to_datetime(df['created_at'])
+def clean_date(string):
+    return datetime.strptime(string[:-6], '%Y-%m-%dT%H:%M:%S')
 
 
 # In[6]:
 
 
-df.tail()
+df = pd.DataFrame.from_dict(feeds)
+fields = [x for x in df.columns if x.startswith('field')]
+for field in fields:
+    df[field] = df[field].str.replace('\r\n','').astype(float)
+df['created_at'] = pd.to_datetime(df['created_at'].apply(clean_date))
 
 
 # In[7]:
 
 
-df2 =  df.set_index('created_at').resample("5T").mean()[fields]
+df.tail()
 
 
 # In[8]:
 
 
-df_old = pd.read_pickle('data.pickle')
-df_old = df_old.append(df2)
-df_old = df_old.drop_duplicates().resample("5T").mean()[fields]
+df2 =  df.set_index('created_at').resample("5T").mean()[fields]
 
 
 # In[9]:
 
 
-df_old.tail()
+df_old = pd.read_pickle('data.pickle')
+#df_old = pd.DataFrame([])
+df_old = df_old.append(df2)
+df_old = df_old.drop_duplicates().resample("5T").mean()[fields]
 
 
 # In[10]:
 
 
-df_old[['field2','field4']].plot(figsize=(15,10),)
+df_old.tail()
 
 
 # In[11]:
 
 
-df_old[['field1','field3']].plot(figsize=(15,10))
+df_old[['field2','field4']].plot(figsize=(15,10),)
 
 
 # In[12]:
 
 
-df_old.to_pickle('data.pickle')
+df_old[['field1','field3']].plot(figsize=(15,10))
 
 
 # In[13]:
 
 
+df_old.to_pickle('data.pickle')
+
+
+# In[14]:
+
+
 dfx = df_old.reset_index()
-#dfx.interpolate(method='linear', limit_direction='forward', axis=0, inplace=True)
+dfx.interpolate(method='linear', limit_direction='forward', axis=0, inplace=True)
 dfx['date2'] = dfx['created_at'].dt.hour + dfx['created_at'].dt.minute/60 + dfx['created_at'].dt.second/3600
 dfx.tail()
 
 
-# In[14]:
+# In[15]:
 
 
 limits = [(int(dfx[['field1','field3']].min().min()),int(dfx[['field1','field3']].max().max()+1)),
@@ -103,7 +111,7 @@ limits = [(int(dfx[['field1','field3']].min().min()),int(dfx[['field1','field3']
 limits
 
 
-# In[15]:
+# In[16]:
 
 
 dfx['theta'] = dfx['date2']  * np.pi / 24. * 2
@@ -139,13 +147,13 @@ plt.savefig('plot.png',dpi=96, bbox_inches = 'tight')
 plt.show()
 
 
-# In[16]:
+# In[17]:
 
 
 dfx.describe()
 
 
-# In[17]:
+# In[18]:
 
 
 d2 = dfx[['created_at','field1']].groupby(dfx['created_at'].dt.date)
@@ -162,7 +170,7 @@ plt.savefig('plot_field1.png',dpi=96, bbox_inches = 'tight')
 plt.show()
 
 
-# In[18]:
+# In[19]:
 
 
 d2 = dfx[['created_at','field3']].groupby(dfx['created_at'].dt.date)
