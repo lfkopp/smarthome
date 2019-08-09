@@ -52,6 +52,9 @@ df['created_at'] = pd.to_datetime(df['created_at'].apply(clean_date))
 # In[7]:
 
 
+raw_old = pd.read_pickle('raw_data.pickle')
+df = raw_old.append(df).drop_duplicates()
+df.to_pickle('raw_data.pickle')
 df.tail()
 
 
