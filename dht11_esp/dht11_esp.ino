@@ -46,7 +46,7 @@ void loop()
  
       if (client.connect(server,80))   //   "184.106.153.149" or api.thingspeak.com
       {  
-       String sendData = apiKey+"&field1="+String(temp)+"&field2="+String(humi)+"\r\n\r\n"; 
+       String sendData = apiKey+"&field5="+String(temp)+"&field6="+String(humi)+"\r\n\r\n"; 
        
        //Serial.println(sendData);
 
